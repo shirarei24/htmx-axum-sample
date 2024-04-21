@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+
+<head>
+    <script src="/assets/js/htmx.min.js"></script>
+</head>
+
+<h1>Todo List</h1>
+<form hx-post="/add" hx-target="#todoItems" hx-trigger="submit">
+    <input type="text" name="task" />
+    <input type="submit" value="Add Task" />
+</form>
+<div id="todoItems"></div>
