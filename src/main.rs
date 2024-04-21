@@ -1,5 +1,5 @@
 use axum::{
-    extract::Form,
+    extract::{Form, Path},
     response::{Html, IntoResponse},
     routing::{get, post},
     Router,
@@ -31,7 +31,8 @@ async fn main() {
     let app = Router::new()
         .nest_service("/assets", tower_http::services::ServeDir::new("assets"))
         .route("/", get(show_tasks))
-        .route("/add", post(add_task));
+        .route("/add", post(add_task))
+        .route("/delete/:id", post(delete_task));
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
         .unwrap();
@@ -50,6 +51,16 @@ async fn show_tasks() -> Html<String> {
 async fn add_task(Form(input): Form<AddTask>) -> impl IntoResponse {
     let mut tasks = TASKS.lock().unwrap();
     tasks.push(input.task);
+    let template = TasksTemplate { tasks: &tasks };
+    Html(template.render().unwrap())
+}
+
+async fn delete_task(Path(id): Path<usize>) -> impl IntoResponse {
+    println!("deleting task {}", id);
+    let mut tasks = TASKS.lock().unwrap();
+    if id < tasks.len() {
+        tasks.remove(id);
+    }
     let template = TasksTemplate { tasks: &tasks };
     Html(template.render().unwrap())
 }

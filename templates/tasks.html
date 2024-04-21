@@ -1,5 +1,14 @@
+<head>
+    <script src="/assets/js/htmx.min.js"></script>
+</head>
+
 <ul id="todoItems">
     {% for task in tasks %}
-    <li>{{ task }}</li>
+    <li>
+        {{ task }}
+        <button type="button" hx-post="/delete/{{ loop.index0 }}" hx-target="#todoItems" hx-swap="outerHTML">
+            Delete
+        </button>
+    </li>
     {% endfor %}
 </ul>
